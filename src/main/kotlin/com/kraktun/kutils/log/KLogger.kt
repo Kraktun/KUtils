@@ -3,7 +3,6 @@ package com.kraktun.kutils.log
 import com.kraktun.kutils.time.TimeFormat
 import com.kraktun.kutils.time.getCurrentDateTimeStamp
 import com.kraktun.kutils.file.getLocalFolder
-import com.kraktun.kutils.file.getParentFolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,8 +35,8 @@ object KLogger {
         mClass = c
         timeFormat = pattern
         val mainFolder = when(type) {
-            LogFolder.DEFAULT -> getLocalFolder(c)
-            LogFolder.PARENT -> getParentFolder(c)
+            LogFolder.DEFAULT -> getLocalFolder(c).absolutePath
+            LogFolder.PARENT -> getLocalFolder(c).parentFile.absolutePath
         }
         fileHolder = File("$mainFolder$LOG_OUTPUT_FOLDER/log_${getCurrentDateTimeStamp(pattern)}.log")
         outPath = "$mainFolder$LOG_OUTPUT_FOLDER"

@@ -4,23 +4,13 @@ import java.io.File
 import java.net.URLDecoder
 
 /**
- * Get parent folder of java\jar file specified.
- * @return path to current parent folder
- * @throws Exception
- */
-@Throws(Exception::class)
-fun<T> getParentFolder(c : Class<T>): String {
-    return getCurrentFolder(c).parentFile.absolutePath
-}
-
-/**
  * Get folder of java\jar file specified.
- * @return path to current folder
+ * @return current folder
  * @throws Exception
  */
 @Throws(Exception::class)
-fun<T> getLocalFolder(c : Class<T>): String {
-    return getCurrentFolder(c).absolutePath
+fun<T> getLocalFolder(c : Class<T>): File {
+    return getCurrentFolder(c)
 }
 
 /**

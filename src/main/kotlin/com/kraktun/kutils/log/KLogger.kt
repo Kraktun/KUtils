@@ -16,6 +16,8 @@ object KLogger {
     private lateinit var outPath: String
     @Volatile private var textHolder = StringBuilder()
     private lateinit var timeFormat: TimeFormat
+    private var mClass: Class<Any>? = null
+    private var initialized = false
 
     fun log(s: String) {
         synchronized(this) {
@@ -27,19 +29,24 @@ object KLogger {
         timeFormat = pattern
         fileHolder = File("$customPath/log_${getCurrentDateTimeStamp(pattern)}.log")
         outPath = customPath
+        initialized = true
     }
 
-    fun initialize(type: LogFolder = LogFolder.DEFAULT, pattern: TimeFormat = TimeFormat.YMD) {
+    fun initialize(c: Class<Any>, type: LogFolder = LogFolder.DEFAULT, pattern: TimeFormat = TimeFormat.YMD) {
+        mClass = c
         timeFormat = pattern
         val mainFolder = when(type) {
-            LogFolder.DEFAULT -> getLocalFolder()
-            LogFolder.PARENT -> getParentFolder()
+            LogFolder.DEFAULT -> getLocalFolder(c)
+            LogFolder.PARENT -> getParentFolder(c)
         }
         fileHolder = File("$mainFolder$LOG_OUTPUT_FOLDER/log_${getCurrentDateTimeStamp(pattern)}.log")
         outPath = "$mainFolder$LOG_OUTPUT_FOLDER"
+        initialized = true
     }
 
     fun flush() {
+        if (!initialized)
+            return // TODO Exception
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
                 synchronized(this) {
@@ -53,19 +60,5 @@ object KLogger {
                 }
             }
         }
-    }
-
-    fun writeSet(file: File, set: Set<String>) {
-        synchronized(this) {
-            FileOutputStream(file, true).bufferedWriter().use { out ->
-                set.forEach { out.writeLn(it) }
-                out.close()
-            }
-        }
-    }
-
-    private fun BufferedWriter.writeLn(line: String) {
-        this.write(line)
-        this.newLine()
     }
 }

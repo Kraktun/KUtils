@@ -9,8 +9,8 @@ import java.net.URLDecoder
  * @throws Exception
  */
 @Throws(Exception::class)
-fun getParentFolder(): String {
-    return getCurrentFolder().parentFile.absolutePath
+fun getParentFolder(c : Class<Any>): String {
+    return getCurrentFolder(c).parentFile.absolutePath
 }
 
 /**
@@ -19,8 +19,8 @@ fun getParentFolder(): String {
  * @throws Exception
  */
 @Throws(Exception::class)
-fun getLocalFolder(): String {
-    return getCurrentFolder().absolutePath
+fun getLocalFolder(c : Class<Any>): String {
+    return getCurrentFolder(c).absolutePath
 }
 
 /**
@@ -31,8 +31,7 @@ fun getLocalFolder(): String {
  * @throws Exception
  */
 @Throws(Exception::class)
-private fun getCurrentFolder() : File {
-    val kClass = com.kraktun.kutils.Main::class.java
+private fun getCurrentFolder(kClass : Class<Any>) : File {
     val codeSource = kClass.protectionDomain.codeSource
     val jarFile: File
     if (codeSource.location != null) {

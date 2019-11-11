@@ -2,9 +2,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.3.50"
+    maven
 }
 
-group = "com.kraktun"
+group = "com.github.kraktun"
 version = "0.0.1"
 val coroutinesVersion = "1.3.2"
 

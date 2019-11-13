@@ -6,13 +6,14 @@ plugins {
 }
 
 group = "com.github.kraktun"
-version = "0.0.1"
-val coroutinesVersion = "1.3.2"
+version = "0.0.2"
 
 repositories {
     mavenCentral()
 	jcenter()
 }
+
+val coroutinesVersion = "1.3.2"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))

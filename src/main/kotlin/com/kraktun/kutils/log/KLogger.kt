@@ -3,11 +3,13 @@ package com.kraktun.kutils.log
 import com.kraktun.kutils.time.TimeFormat
 import com.kraktun.kutils.time.getCurrentDateTimeStamp
 import com.kraktun.kutils.file.getLocalFolder
+import com.kraktun.kutils.jobs.JobExecutor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Utility object to log.
@@ -23,6 +25,7 @@ object KLogger {
     private lateinit var timeFormat: TimeFormat
     private var mClass: Class<Any>? = null
     private var initialized = false
+    private var cleanerJob : JobExecutor? = null
 
     /**
      * Log text
@@ -41,10 +44,12 @@ object KLogger {
      * @return current
      */
     fun initialize(customPath: String, pattern: TimeFormat = TimeFormat.YMD) : KLogger {
-        timeFormat = pattern
-        fileHolder = File("$customPath/log_${getCurrentDateTimeStamp(pattern)}.log")
-        outPath = customPath
-        initialized = true
+        synchronized(this) {
+            timeFormat = pattern
+            fileHolder = File("$customPath/log_${getCurrentDateTimeStamp(pattern)}.log")
+            outPath = customPath
+            initialized = true
+        }
         return this
     }
 
@@ -59,38 +64,53 @@ object KLogger {
                    type: LogFolder = LogFolder.DEFAULT,
                    pattern: TimeFormat = TimeFormat.YMD,
                    logFolder : String = LOG_OUTPUT_FOLDER) : KLogger {
-        mClass = c
-        timeFormat = pattern
-        val mainFolder = when(type) {
-            LogFolder.DEFAULT -> getLocalFolder(c).absolutePath
-            LogFolder.PARENT -> getLocalFolder(c).parentFile.absolutePath
+        synchronized(this) {
+            mClass = c
+            timeFormat = pattern
+            val mainFolder = when (type) {
+                LogFolder.DEFAULT -> getLocalFolder(c).absolutePath
+                LogFolder.PARENT -> getLocalFolder(c).parentFile.absolutePath
+            }
+            File("$mainFolder$logFolder").mkdirs()
+            fileHolder = File("$mainFolder$logFolder/log_${getCurrentDateTimeStamp(pattern)}.log")
+            outPath = "$mainFolder$logFolder"
+            initialized = true
         }
-        File("$mainFolder$logFolder").mkdirs()
-        fileHolder = File("$mainFolder$logFolder/log_${getCurrentDateTimeStamp(pattern)}.log")
-        outPath = "$mainFolder$logFolder"
-        initialized = true
         return this
     }
+
+    /**
+     * Add job to periodically flush the writer.
+     */
+    fun withExecutor(interval : Long = 60, unit: TimeUnit = TimeUnit.SECONDS) : KLogger {
+        synchronized(this) {
+            cleanerJob = JobExecutor(
+                action = { flush() },
+                interval = interval,
+                timeUnit = unit,
+                initialDelay = interval
+            ).also { it.start() }
+        }
+        return this
+    }
+
 
     /**
      * Writes pending changes.
      * Uses sync method.
      */
     fun close() {
-        if (!initialized)
-            throw LoggerNotInitializedException("Logger has not been initialized, or it has been closed.")
         synchronized(this) {
             write()
+            cleanerJob?.stop()
+            initialized = false
         }
-        initialized = false
     }
 
     /**
      * Writes changes to file. Async IO call.
      */
     fun flush() {
-        if (!initialized)
-            throw LoggerNotInitializedException("Logger has not been initialized, or it has been closed.")
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
                 synchronized(this) {
@@ -102,8 +122,11 @@ object KLogger {
 
     /**
      * Writes logged entries to file.
+     * Must be executed only in synchronized blocks.
      */
     private fun write() {
+        if (!initialized)
+            throw LoggerNotInitializedException("Logger has not been initialized, or it has been closed.")
         if (textHolder.isNotEmpty()) {
             FileOutputStream(fileHolder, true).bufferedWriter().use {
                 it.write(textHolder.toString())

@@ -52,6 +52,10 @@ object KLogger {
         }
     }
 
+    /**
+     * Get current log file
+     * @return current log file
+     */
     fun getOutputFile() : File {
         return fileHolder
     }

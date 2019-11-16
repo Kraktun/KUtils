@@ -17,7 +17,6 @@ class Orchestrator {
      * @param enableLog true if it should print to stdout number of current element in process
      * @return map with functionK as key and function passed to the optimizer as value
      */
-    @Suppress("UNCHECKED_CAST")
     fun<T, P, K> run(optimizer: Optimizer<T, K>,
                      functionK: (T) -> P,
                      channelCapacity: Int,

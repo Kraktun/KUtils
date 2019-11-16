@@ -23,7 +23,7 @@ object KLogger {
     private lateinit var outPath: String
     @Volatile private var textHolder = StringBuilder()
     private lateinit var timeFormat: TimeFormat
-    private var mClass: Class<Any>? = null
+    private var mClass: Class<*>? = null
     private var initialized = false
     private var cleanerJob : JobExecutor? = null
 
@@ -52,6 +52,10 @@ object KLogger {
         }
     }
 
+    fun getOutputFile() : File {
+        return fileHolder
+    }
+
     /**
      * Initialize logger with a custom path and time pattern
      * @param customPath path where to store logs (log files are placed in the provided path, no additional subfolder is created).
@@ -75,7 +79,7 @@ object KLogger {
      * @param pattern format to use for time tags
      * @param logFolder subfolder of the extracted path (from c, according to type) where to store logs.
      */
-    fun initialize(c: Class<Any>,
+    fun initialize(c: Class<*>,
                    type: LogFolder = LogFolder.DEFAULT,
                    pattern: TimeFormat = TimeFormat.YMD,
                    logFolder : String = LOG_OUTPUT_FOLDER) : KLogger {

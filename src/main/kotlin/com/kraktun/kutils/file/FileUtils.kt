@@ -9,7 +9,7 @@ import java.net.URLDecoder
  * @throws Exception
  */
 @Throws(Exception::class)
-fun<T> getLocalFolder(c : Class<T>): File {
+fun getLocalFolder(c : Class<*>): File {
     return getCurrentFolder(c)
 }
 
@@ -21,7 +21,7 @@ fun<T> getLocalFolder(c : Class<T>): File {
  * @throws Exception
  */
 @Throws(Exception::class)
-private fun<T> getCurrentFolder(kClass : Class<T>) : File {
+private fun getCurrentFolder(kClass : Class<*>) : File {
     val codeSource = kClass.protectionDomain.codeSource
     val jarFile: File
     if (codeSource.location != null) {

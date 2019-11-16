@@ -90,7 +90,7 @@ object KLogger {
                 LogFolder.DEFAULT -> getLocalFolder(c).absolutePath
                 LogFolder.PARENT -> getLocalFolder(c).parentFile.absolutePath
             }
-            File("$mainFolder$logFolder").mkdirs()
+            File("$mainFolder/$logFolder").mkdirs()
             fileHolder = File("$mainFolder$logFolder/log_${getCurrentDateTimeStamp(pattern)}.log")
             outPath = "$mainFolder$logFolder"
             initialized = true

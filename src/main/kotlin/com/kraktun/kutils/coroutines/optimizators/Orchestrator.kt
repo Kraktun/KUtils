@@ -14,10 +14,15 @@ class Orchestrator {
      * @param functionK function to execute on each element of the list passed to the optimizer, to get the key for the map
      * @param channelCapacity capacity of the channel
      * @param threads number of coroutines to start
+     * @param enableLog true if it should print to stdout number of current element in process
      * @return map with functionK as key and function passed to the optimizer as value
      */
     @Suppress("UNCHECKED_CAST")
-    fun<T, P, K> run(optimizer: Optimizer, functionK: (T) -> P, channelCapacity: Int, threads: Int): Map<P, K> {
+    fun<T, P, K> run(optimizer: Optimizer<T, K>,
+                     functionK: (T) -> P,
+                     channelCapacity: Int,
+                     threads: Int,
+                     enableLog : Boolean = false): Map<P, K> {
         val newMap = ConcurrentHashMap<P, K>()
         runBlocking {
             val counter = IntArray(optimizer.getSize()) {it + 1}
@@ -32,8 +37,9 @@ class Orchestrator {
             for (t in 1..threads) {
                 waitingFor.add(GlobalScope.async(CoroutineName("Core$t")) {
                     for (f in listChannel) {
-                        println("Processing element $f/${optimizer.getSize()}")
-                        val result = optimizer.executeNext() as Pair<T, K>
+                        if (enableLog)
+                            println("Processing element $f/${optimizer.getSize()}")
+                        val result : Pair<T, K> = optimizer.executeNext()
                         newMap[functionK(result.first)] = result.second
                     }
                 })

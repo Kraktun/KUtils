@@ -20,7 +20,7 @@ class NumberedOptimizer<K, P> (
     private val highThreads: Int = 1,
     private val validator: (K) -> Boolean = {true},
     private val highFunction: (K) -> P,
-    private val lowFunction: (K) -> P) : Optimizer {
+    private val lowFunction: (K) -> P) : Optimizer<K, P> {
 
     private val elements = LinkedList(files)
     private var freeHighs = highThreads
@@ -29,7 +29,7 @@ class NumberedOptimizer<K, P> (
         return files.size
     }
 
-    override fun executeNext(): Any {
+    override fun executeNext(): Pair<K, P> {
         var isHigh : Boolean
         val el : K
         val result : P
@@ -43,13 +43,11 @@ class NumberedOptimizer<K, P> (
             }
         }
         if (isHigh) {
-            //println("Executing high func")
             result = highFunction(el)
             synchronized(this) {
                 freeHighs++
             }
         } else {
-            //println("Executing low func")
             result = lowFunction(el)
         }
         return Pair(el, result)

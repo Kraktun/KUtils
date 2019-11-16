@@ -14,3 +14,15 @@ fun getCurrentDateTimeStamp(pattern: TimeFormat): String {
     return LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern(patternF))
 }
+
+/**
+ * Get current date and time formatted according to passed pattern
+ */
+fun getCurrentDateTimeLog(pattern: TimeFormat): String {
+    val patternF = when(pattern) {
+        TimeFormat.YDM -> "yyyy-dd-MM HH:mm:ss"
+        TimeFormat.YMD -> "yyyy-MM-dd HH:mm:ss"
+    }
+    return LocalDateTime.now()
+        .format(DateTimeFormatter.ofPattern(patternF))
+}

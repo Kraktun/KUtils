@@ -4,6 +4,7 @@ import com.kraktun.kutils.time.TimeFormat
 import com.kraktun.kutils.time.getCurrentDateTimeStamp
 import com.kraktun.kutils.file.getLocalFolder
 import com.kraktun.kutils.jobs.JobExecutor
+import com.kraktun.kutils.time.getCurrentDateTimeLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -15,7 +16,6 @@ import java.util.concurrent.TimeUnit
  * Utility object to log.
  * Must be initialized before usage.
  * Must be closed at the end.
- * TODO Add optional job to periodically flush
  */
 object KLogger {
 
@@ -30,10 +30,25 @@ object KLogger {
     /**
      * Log text
      * @param s text to log
+     * @param addDateTime true if current date-time should pre-pended to s
      */
-    fun log(s: String) {
+    fun log(s: String, addDateTime: Boolean = false) {
         synchronized(this) {
-            textHolder.append(s + "\n")
+            val text = if (addDateTime) "[${getCurrentDateTimeLog(timeFormat)}] $s\n" else "$s\n"
+            textHolder.append(text)
+        }
+    }
+
+    /**
+     * Log text with tag
+     * @param tag tag to add in front of s
+     * @param s text to log
+     * @param addDateTime true if current date-time should pre-pended to tag + s
+     */
+    fun logTagged(tag: String, s: String, addDateTime: Boolean = false) {
+        synchronized(this) {
+            val text = if (addDateTime) "[${getCurrentDateTimeLog(timeFormat)}] $tag: $s\n" else "$s\n"
+            textHolder.append(text)
         }
     }
 

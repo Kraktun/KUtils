@@ -12,3 +12,15 @@ inline fun <E : Any, T : Collection<E>> T?.ifNotEmpty(func: T.() -> Any?, defaul
         }
     } else default
 }
+
+/**
+ * Reduce a list to a string with each element of the string in a new line
+ */
+fun List<*>.toBasicString() : String {
+    return this.map{ it.toString() }.reduce { acc, s ->
+        if (acc.isEmpty())
+            s
+        else
+            "$acc\n$s"
+    }
+}

@@ -17,22 +17,12 @@ inline fun <E : Any, T : Collection<E>> T?.ifNotEmpty(func: T.() -> Any?, defaul
  * Reduce a collection to a string with each element of the collection in a new line
  */
 fun Collection<*>.toBasicString() : String {
-    return this.map{ it.toString() }.reduce { acc, s ->
-        if (acc.isEmpty())
-            s
-        else
-            "$acc\n$s"
-    }
+    return buildString { this@toBasicString.forEach{ if (this.isNotEmpty()) this.append("\n$it") else this.append(it)} }
 }
 
 /**
  * Reduce a map to a string with each element of the map in a new line
  */
 fun Map<*, *>.toBasicString() : String {
-    return this.map{ it.toString() }.reduce { acc, s ->
-        if (acc.isEmpty())
-            s
-        else
-            "$acc\n$s"
-    }
+    return buildString { this@toBasicString.forEach{ if (this.isNotEmpty()) this.append("\n$it") else this.append(it)} }
 }

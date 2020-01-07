@@ -15,7 +15,7 @@ import java.util.*
  * @param highFunction function to execute on high priority
  * @param lowFunction function to execute on low priority
  */
-class NumberedOptimizer<K, P> (
+class BipartiteOptimizer<K, P> (
     private val files: List<K>,
     private val highThreads: Int = 1,
     private val validator: (K) -> Boolean = {true},

@@ -34,3 +34,25 @@ private fun getCurrentFolder(kClass : Class<*>) : File {
     }
     return jarFile
 }
+
+@Throws(Exception::class)
+fun getTargetFolder(c : Class<*>, buildEnv: BuildEnv) : File {
+    // For some reason if executed outside C it needs a '.parent' more
+    val isInC = getLocalFolder(c).absolutePath.substring(0, 1).equals("C", true) // true if method is executed in C path
+    val isJar = getLocalFolder(c).absolutePath.substringAfterLast(".") == "jar"
+    val parentJar = getLocalFolder(c).parentFile.absolutePath
+    val parentLocal = when {
+        !isInC && buildEnv == BuildEnv.INTELLIJ -> getLocalFolder(c).parentFile.parentFile.parent
+        buildEnv == BuildEnv.INTELLIJ ->  getLocalFolder(c).parentFile.parentFile.parentFile.parent
+        else -> getLocalFolder(c).absolutePath
+    }
+    return if (isJar)
+        File(parentJar)
+    else
+        File(parentLocal)
+}
+
+enum class BuildEnv {
+    INTELLIJ,
+    DEFAULT
+}

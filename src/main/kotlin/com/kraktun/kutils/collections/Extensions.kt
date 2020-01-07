@@ -26,3 +26,8 @@ fun Collection<*>.toBasicString() : String {
 fun Map<*, *>.toBasicString() : String {
     return buildString { this@toBasicString.forEach{ if (this.isNotEmpty()) this.append("\n$it") else this.append(it)} }
 }
+
+/**
+ * Simple and easy way to replace elements in a collections
+ */
+fun <E> Iterable<E>.replaceAll(old: E, new: E) = map { if (it == old) new else it }

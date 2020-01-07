@@ -1,8 +1,10 @@
 package com.kraktun.kutils.log
 
+import com.kraktun.kutils.file.BuildEnv
 import com.kraktun.kutils.time.TimeFormat
 import com.kraktun.kutils.time.getCurrentDateTimeStamp
 import com.kraktun.kutils.file.getLocalFolder
+import com.kraktun.kutils.file.getTargetFolder
 import com.kraktun.kutils.jobs.JobExecutor
 import com.kraktun.kutils.time.getCurrentDateTimeLog
 import kotlinx.coroutines.Dispatchers
@@ -82,21 +84,24 @@ object KLogger {
      * @param type DEFAULT to use path of class c, PARENT to use parent folder of c.
      * @param pattern format to use for time tags
      * @param logFolder subfolder of the extracted path (from c, according to type) where to store logs.
+     * @param buildEnv build environment (needed to match the right number of parent folders if executed from an IDE).
+     *      Used only if not executed from a jar file.
      */
     fun initialize(c: Class<*>,
                    type: LogFolder = LogFolder.DEFAULT,
                    pattern: TimeFormat = TimeFormat.YMD,
-                   logFolder : String = LOG_OUTPUT_FOLDER) : KLogger {
+                   logFolder : String = LOG_OUTPUT_FOLDER,
+                   buildEnv : BuildEnv) : KLogger {
         synchronized(this) {
             mClass = c
             timeFormat = pattern
             val mainFolder = when (type) {
-                LogFolder.DEFAULT -> getLocalFolder(c).absolutePath
-                LogFolder.PARENT -> getLocalFolder(c).parentFile.absolutePath
+                LogFolder.DEFAULT -> getTargetFolder(c, buildEnv).absolutePath
+                LogFolder.PARENT -> getTargetFolder(c, buildEnv).parentFile.absolutePath
             }
-            File("$mainFolder/$logFolder").mkdirs()
-            fileHolder = File("$mainFolder/$logFolder/log_${getCurrentDateTimeStamp(pattern)}.log")
             outPath = "$mainFolder/$logFolder"
+            File(outPath).mkdirs()
+            fileHolder = File("$outPath/log_${getCurrentDateTimeStamp(pattern)}.log")
             initialized = true
         }
         return this

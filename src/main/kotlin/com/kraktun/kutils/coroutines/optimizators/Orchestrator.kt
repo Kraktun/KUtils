@@ -34,12 +34,14 @@ class Orchestrator {
             }
             val waitingFor = mutableSetOf<Deferred<Unit>>()
             for (t in 1..threads) {
-                waitingFor.add(GlobalScope.async(CoroutineName("Core$t")) {
-                    for (f in listChannel) {
-                        if (enableLog)
-                            println("Processing element $f/${optimizer.getSize()}")
-                        val result : Pair<T, K> = optimizer.executeNext()
-                        newMap[functionK(result.first)] = result.second
+                waitingFor.add(coroutineScope {
+                    async(CoroutineName("Core$t")) {
+                        for (f in listChannel) {
+                            if (enableLog)
+                                println("Processing element $f/${optimizer.getSize()}")
+                            val result : Pair<T, K> = optimizer.executeNext()
+                            newMap[functionK(result.first)] = result.second
+                        }
                     }
                 })
             }

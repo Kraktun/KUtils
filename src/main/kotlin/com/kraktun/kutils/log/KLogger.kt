@@ -3,14 +3,10 @@ package com.kraktun.kutils.log
 import com.kraktun.kutils.file.BuildEnv
 import com.kraktun.kutils.time.TimeFormat
 import com.kraktun.kutils.time.getCurrentDateTimeStamp
-import com.kraktun.kutils.file.getLocalFolder
 import com.kraktun.kutils.file.getTargetFolder
 import com.kraktun.kutils.jobs.JobExecutor
 import com.kraktun.kutils.time.getCurrentDateTimeLog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.*
 import java.util.concurrent.TimeUnit
 
@@ -28,6 +24,7 @@ object KLogger {
     private var mClass: Class<*>? = null
     private var initialized = false
     private var cleanerJob : JobExecutor? = null
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     /**
      * Log text
@@ -129,8 +126,9 @@ object KLogger {
      */
     fun close() {
         synchronized(this) {
-            write()
             cleanerJob?.stop()
+            scope.cancel()
+            write()
             initialized = false
         }
     }
@@ -139,11 +137,9 @@ object KLogger {
      * Writes changes to file. Async IO call.
      */
     fun flush() {
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                synchronized(this) {
-                    write()
-                }
+        scope.launch(CoroutineName("KLogger flush")) {
+            synchronized(this) {
+                write()
             }
         }
     }

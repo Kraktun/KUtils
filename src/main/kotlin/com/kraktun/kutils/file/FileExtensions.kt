@@ -1,9 +1,6 @@
 package com.kraktun.kutils.file
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
@@ -44,9 +41,13 @@ fun File.writeText(s: String, append: Boolean = false, async: Boolean = true) {
     if (s.isEmpty())
         return
     if (async) {
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                writeFile(this@writeText, s, append)
+        runBlocking {
+            coroutineScope {
+                launch {
+                    withContext(Dispatchers.IO) {
+                        writeFile(this@writeText, s, append)
+                    }
+                }
             }
         }
     } else {

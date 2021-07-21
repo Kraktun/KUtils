@@ -19,11 +19,10 @@ class BasicOptimizer<K, P> (
 
     override fun executeNext(): Pair<K, P> {
         val el : K
-        val result : P
         synchronized(this) {
             el = elements.removeFirst()
         }
-        result = function(el)
+        val result : P = function(el)
         return Pair(el, result)
     }
 }

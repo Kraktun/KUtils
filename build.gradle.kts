@@ -1,47 +1,32 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.50"
-    maven
+    kotlin("jvm") version "1.5.21"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "com.github.kraktun"
-version = "0.0.3"
+version = "0.0.4"
 
 repositories {
     mavenCentral()
-	jcenter()
 }
 
-val coroutinesVersion = "1.3.2"
+sourceSets.main {
+    java.srcDirs("src/main/java", "src/main/kotlin")
+}
+
+val coroutinesVersion = "1.5.1"
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-	compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-val fatJar = task("fatJar", type = Jar::class) {
-    baseName = project.name
-    manifest {
-        attributes["Implementation-Title"] = "KUtils"
-        attributes["Implementation-Version"] = version
-        // attributes["Main-Class"] = "com.kraktun.kutils.MainKt"
-    }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
-    with(tasks.jar.get() as CopySpec)
-}
-
-tasks {
-    "build" {
-        dependsOn(fatJar)
-    }
+    kotlinOptions.jvmTarget = "11"
 }
 
 tasks.withType<KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }

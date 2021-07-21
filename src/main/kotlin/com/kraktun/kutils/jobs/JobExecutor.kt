@@ -1,5 +1,6 @@
 package com.kraktun.kutils.jobs
 
+import java.lang.Runnable
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 

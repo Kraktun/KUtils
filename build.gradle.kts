@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `maven-publish`
     `java-library`
+    java
     kotlin("jvm") version "1.5.21"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -12,6 +13,7 @@ version = "0.0.4"
 
 repositories {
     mavenCentral()
+    maven(url = "https://jitpack.io")
 }
 
 sourceSets.main {
@@ -26,10 +28,20 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 tasks.withType<KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+val sourcesJar = task("sourcesJar", type = Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+}
+
+artifacts {
+    archives(sourcesJar)
 }

@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
-    `java-library`
     java
     kotlin("jvm") version "1.5.21"
     id("com.github.johnrengelman.shadow") version "7.0.0"
@@ -39,9 +38,33 @@ tasks.withType<KotlinCompile>().all {
 val sourcesJar = task("sourcesJar", type = Jar::class) {
     archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
-    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 artifacts {
     archives(sourcesJar)
+}
+
+java {
+    //withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            artifactId = "KUtils"
+            from(components["java"])
+            pom {
+                name.set("KUtils")
+                description.set("Collection of utilities for Kotlin and Java")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://spdx.org/licenses/MIT.html")
+                    }
+                }
+            }
+        }
+    }
 }

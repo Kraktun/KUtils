@@ -21,6 +21,7 @@ sourceSets.main {
 val coroutinesVersion = "1.5.1"
 
 dependencies {
+    implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 }
 

@@ -4,7 +4,7 @@ import java.lang.Runnable
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class JobExecutor(
+class SingleJobExecutor(
     val action: () -> Unit,
     val interval: Long,
     val initialDelay: Long = 0,

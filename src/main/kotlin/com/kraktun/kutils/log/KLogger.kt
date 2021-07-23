@@ -4,7 +4,7 @@ import com.kraktun.kutils.file.BuildEnv
 import com.kraktun.kutils.time.TimeFormat
 import com.kraktun.kutils.time.getCurrentDateTimeStamp
 import com.kraktun.kutils.file.getTargetFolder
-import com.kraktun.kutils.jobs.JobExecutor
+import com.kraktun.kutils.jobs.SingleJobExecutor
 import com.kraktun.kutils.time.getCurrentDateTimeLog
 import kotlinx.coroutines.*
 import java.io.*
@@ -23,7 +23,7 @@ object KLogger {
     private lateinit var timeFormat: TimeFormat
     private var mClass: Class<*>? = null
     private var initialized = false
-    private var cleanerJob : JobExecutor? = null
+    private var cleanerJob : SingleJobExecutor? = null
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     /**
@@ -109,7 +109,7 @@ object KLogger {
      */
     fun withExecutor(interval : Long = 60, unit: TimeUnit = TimeUnit.SECONDS) : KLogger {
         synchronized(this) {
-            cleanerJob = JobExecutor(
+            cleanerJob = SingleJobExecutor(
                 action = { flush() },
                 interval = interval,
                 timeUnit = unit,

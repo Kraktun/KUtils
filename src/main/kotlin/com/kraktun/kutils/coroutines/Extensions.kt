@@ -19,10 +19,10 @@ suspend fun <A, B> Iterable<A>.parallelMapIndexed(f: suspend (Int, A) -> B): Lis
  * Execute mapIndexed() in chunkSize parallel threads on a collection
  */
 suspend fun <A, B> Iterable<A>.parallelMapIndexedChunked(chunkSize: Int, f: suspend (Int, A) -> B): List<B> = coroutineScope {
-    chunked(chunkSize).map { chunk ->
+    chunked(chunkSize).mapIndexed { i, chunk ->
         async {
             chunk.mapIndexed { index, obj ->
-                f(index, obj)
+                f(i*chunkSize + index, obj)
             }
         }
     }.awaitAll().flatten()

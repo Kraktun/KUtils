@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
-abstract class MultiJobExecutorCoroutines(threadPool: Int) : CoroutineScope {
+class MultiJobExecutorCoroutines(threadPool: Int) : CoroutineScope {
 
     private val scheduler = Executors.newScheduledThreadPool(threadPool)
     private val tasks = mutableMapOf<String, Job>()

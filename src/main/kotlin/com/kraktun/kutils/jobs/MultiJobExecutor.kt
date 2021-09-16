@@ -14,9 +14,9 @@ class MultiJobExecutor(threadPool: Int)  {
                      key: String,
                      interval: Long,
                      initialDelay: Long = 0,
-                     timeUnit: TimeUnit) {
+                     timeUnit: TimeUnit = TimeUnit.MILLISECONDS) {
         if (key in tasks.keys) throw KeyAlreadyUsedException()
-        val task = Runnable { action }
+        val task = Runnable { action.invoke() }
         val future = scheduler.scheduleWithFixedDelay(task, initialDelay, interval, timeUnit)
         tasks[key] = future
     }

@@ -11,6 +11,7 @@ class MultiJobExecutorCoroutines(threadPool: Int) : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Job() + scheduler.asCoroutineDispatcher()
 
+    // delay and interval are in milliseconds
     fun registerTask(action: () -> Unit,
                      key: String,
                      interval: Long,

@@ -11,7 +11,7 @@ These are simple shortcuts, nothing fancy.
 	* execute scripts
 	* write files
 	* get current folder
-* job scheduler
+* job scheduler (coroutines are currently broken)
 * logger with basic personalizations: folder, date format
 * date-time formats
 

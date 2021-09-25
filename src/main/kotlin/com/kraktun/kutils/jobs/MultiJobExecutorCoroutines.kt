@@ -2,6 +2,7 @@ package com.kraktun.kutils.jobs
 
 import kotlinx.coroutines.*
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
 class MultiJobExecutorCoroutines(threadPool: Int) : CoroutineScope {
@@ -11,17 +12,18 @@ class MultiJobExecutorCoroutines(threadPool: Int) : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Job() + scheduler.asCoroutineDispatcher()
 
-    // delay and interval are in milliseconds
-    fun registerTask(action: () -> Unit,
+    fun registerTask(action: (CoroutineScope) -> Unit,
                      key: String,
                      interval: Long,
-                     initialDelay: Long = 0) {
+                     initialDelay: Long = 0,
+                     timeUnit: TimeUnit = TimeUnit.SECONDS) {
         if (key in tasks.keys) throw KeyAlreadyUsedException()
-        val job = launch(context = coroutineContext) {
-            delay(initialDelay)
-            while (this.isActive) {
-                action()
-                delay(interval)
+        val targetUnit = TimeUnit.MILLISECONDS
+        val job = CoroutineScope(Dispatchers.IO).launch(context = coroutineContext) {
+            delay(targetUnit.convert(initialDelay, timeUnit))
+            while (isActive) {
+                action(this)
+                delay(targetUnit.convert(interval, timeUnit))
             }
         }
         tasks[key] = job

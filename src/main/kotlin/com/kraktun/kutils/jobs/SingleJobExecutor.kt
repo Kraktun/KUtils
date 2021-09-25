@@ -8,7 +8,7 @@ class SingleJobExecutor(
     val action: () -> Unit,
     val interval: Long,
     val initialDelay: Long = 0,
-    val timeUnit: TimeUnit
+    val timeUnit: TimeUnit = TimeUnit.SECONDS
 )  {
 
     private val scheduler = Executors.newScheduledThreadPool(1)

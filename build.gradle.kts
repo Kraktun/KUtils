@@ -3,12 +3,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `maven-publish`
     java
-    kotlin("jvm") version "1.5.30"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    kotlin("jvm") version "1.6.10"
+    id("com.github.johnrengelman.shadow") version "7.1.1"
 }
 
 group = "com.kraktun"
-version = "0.0.6"
+version = "0.0.7"
 
 repositories {
     mavenCentral()
@@ -19,10 +19,10 @@ sourceSets.main {
     java.srcDirs("src/main/java", "src/main/kotlin")
 }
 
-val coroutinesVersion = "1.5.2-native-mt"
+val coroutinesVersion = "1.6.0-RC2"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.30")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 }
 

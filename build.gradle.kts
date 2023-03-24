@@ -8,7 +8,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = "com.kraktun.kutils"
+group = "com.kraktun"
 version = "0.0.8"
 
 repositories {
@@ -28,12 +28,12 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
 
 tasks.withType<KotlinCompile>().all {
-    kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
-    kotlinOptions.jvmTarget = "1.8"
+    //kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+    kotlinOptions.jvmTarget = "11"
 }
 
 val sourcesJar = task("sourcesJar", type = Jar::class) {

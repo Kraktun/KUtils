@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 fun File.executeScript(
     timeoutAmount: Long,
     timeoutUnit: TimeUnit,
-    vararg arguments: String
+    vararg arguments: String,
 ): String {
     val process = ProcessBuilder(*arguments)
         .directory(this)
@@ -38,8 +38,9 @@ fun File.executeScript(vararg arguments: String): String {
  * @param async true if it should be executed in a IO coroutine
  */
 fun File.writeText(s: String, append: Boolean = false, async: Boolean = true) {
-    if (s.isEmpty())
+    if (s.isEmpty()) {
         return
+    }
     if (async) {
         runBlocking {
             coroutineScope {

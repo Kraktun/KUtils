@@ -1,11 +1,11 @@
 package com.kraktun.kutils.log
 
 import com.kraktun.kutils.file.BuildEnv
-import com.kraktun.kutils.time.TimeFormat
-import com.kraktun.kutils.time.getCurrentDateTimeStamp
 import com.kraktun.kutils.file.getTargetFolder
 import com.kraktun.kutils.jobs.SingleJobExecutor
+import com.kraktun.kutils.time.TimeFormat
 import com.kraktun.kutils.time.getCurrentDateTimeLog
+import com.kraktun.kutils.time.getCurrentDateTimeStamp
 import kotlinx.coroutines.*
 import java.io.*
 import java.util.concurrent.TimeUnit
@@ -19,11 +19,12 @@ object KLogger {
 
     private lateinit var fileHolder: File
     private lateinit var outPath: String
+
     @Volatile private var textHolder = StringBuilder()
     private lateinit var timeFormat: TimeFormat
     private var mClass: Class<*>? = null
     private var initialized = false
-    private var cleanerJob : SingleJobExecutor? = null
+    private var cleanerJob: SingleJobExecutor? = null
     private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     /**
@@ -55,7 +56,7 @@ object KLogger {
      * Get current log file
      * @return current log file
      */
-    fun getOutputFile() : File {
+    fun getOutputFile(): File {
         return fileHolder
     }
 
@@ -65,7 +66,7 @@ object KLogger {
      * @param pattern format to use for time tags
      * @return current
      */
-    fun initialize(customPath: String, pattern: TimeFormat = TimeFormat.YMD) : KLogger {
+    fun initialize(customPath: String, pattern: TimeFormat = TimeFormat.YMD): KLogger {
         synchronized(this) {
             timeFormat = pattern
             fileHolder = File("$customPath/log_${getCurrentDateTimeStamp(pattern)}.log")
@@ -84,11 +85,13 @@ object KLogger {
      * @param buildEnv build environment (needed to match the right number of parent folders if executed from an IDE).
      *      Used only if not executed from a jar file.
      */
-    fun initialize(c: Class<*>,
-                   type: LogFolder = LogFolder.DEFAULT,
-                   pattern: TimeFormat = TimeFormat.YMD,
-                   logFolder : String = LOG_OUTPUT_FOLDER,
-                   buildEnv : BuildEnv) : KLogger {
+    fun initialize(
+        c: Class<*>,
+        type: LogFolder = LogFolder.DEFAULT,
+        pattern: TimeFormat = TimeFormat.YMD,
+        logFolder: String = LOG_OUTPUT_FOLDER,
+        buildEnv: BuildEnv,
+    ): KLogger {
         synchronized(this) {
             mClass = c
             timeFormat = pattern
@@ -107,18 +110,17 @@ object KLogger {
     /**
      * Add job to periodically flush the writer.
      */
-    fun withExecutor(interval : Long = 60, unit: TimeUnit = TimeUnit.SECONDS) : KLogger {
+    fun withExecutor(interval: Long = 60, unit: TimeUnit = TimeUnit.SECONDS): KLogger {
         synchronized(this) {
             cleanerJob = SingleJobExecutor(
                 action = { flush() },
                 interval = interval,
                 timeUnit = unit,
-                initialDelay = interval
+                initialDelay = interval,
             ).also { it.start() }
         }
         return this
     }
-
 
     /**
      * Writes pending changes.
@@ -149,8 +151,9 @@ object KLogger {
      * Must be executed only in synchronized blocks.
      */
     private fun write() {
-        if (!initialized)
+        if (!initialized) {
             throw LoggerNotInitializedException("Logger has not been initialized, or it has been closed.")
+        }
         if (textHolder.isNotEmpty()) {
             FileOutputStream(fileHolder, true).bufferedWriter().use {
                 it.write(textHolder.toString())

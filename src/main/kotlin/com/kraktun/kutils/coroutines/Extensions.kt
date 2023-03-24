@@ -10,7 +10,7 @@ import kotlinx.coroutines.coroutineScope
 suspend fun <A, B> Iterable<A>.parallelMapIndexed(f: suspend (Int, A) -> B): List<B> = coroutineScope {
     mapIndexed { ind, obj ->
         async {
-            f(ind,obj)
+            f(ind, obj)
         }
     }.awaitAll()
 }
@@ -22,7 +22,7 @@ suspend fun <A, B> Iterable<A>.parallelMapIndexedChunked(chunkSize: Int, f: susp
     chunked(chunkSize).mapIndexed { i, chunk ->
         async {
             chunk.mapIndexed { index, obj ->
-                f(i*chunkSize + index, obj)
+                f(i * chunkSize + index, obj)
             }
         }
     }.awaitAll().flatten()

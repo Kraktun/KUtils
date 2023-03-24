@@ -9,7 +9,8 @@ import java.util.*
  */
 class BasicOptimizer<K, P> (
     private val files: List<K>,
-    private val function: (K) -> P) : Optimizer<K, P> {
+    private val function: (K) -> P,
+) : Optimizer<K, P> {
 
     private val elements = LinkedList(files)
 
@@ -18,11 +19,11 @@ class BasicOptimizer<K, P> (
     }
 
     override fun executeNext(): Pair<K, P> {
-        val el : K
+        val el: K
         synchronized(this) {
             el = elements.removeFirst()
         }
-        val result : P = function(el)
+        val result: P = function(el)
         return Pair(el, result)
     }
 }

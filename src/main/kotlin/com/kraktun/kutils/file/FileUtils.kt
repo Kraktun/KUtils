@@ -9,7 +9,7 @@ import java.net.URLDecoder
  * @throws Exception
  */
 @Throws(Exception::class)
-fun getLocalFolder(c : Class<*>): File {
+fun getLocalFolder(c: Class<*>): File {
     return getCurrentFolder(c)
 }
 
@@ -21,7 +21,7 @@ fun getLocalFolder(c : Class<*>): File {
  * @throws Exception
  */
 @Throws(Exception::class)
-private fun getCurrentFolder(kClass : Class<*>) : File {
+private fun getCurrentFolder(kClass: Class<*>): File {
     val codeSource = kClass.protectionDomain.codeSource
     val jarFile: File
     if (codeSource.location != null) {
@@ -36,23 +36,24 @@ private fun getCurrentFolder(kClass : Class<*>) : File {
 }
 
 @Throws(Exception::class)
-fun getTargetFolder(c : Class<*>, buildEnv: BuildEnv) : File {
+fun getTargetFolder(c: Class<*>, buildEnv: BuildEnv): File {
     // For some reason if executed outside C it needs a '.parent' more
     val isInC = getLocalFolder(c).absolutePath.substring(0, 1).equals("C", true) // true if method is executed in C path
     val isJar = getLocalFolder(c).absolutePath.substringAfterLast(".") == "jar"
     val parentJar = getLocalFolder(c).parentFile.absolutePath
     val parentLocal = when {
         !isInC && buildEnv == BuildEnv.INTELLIJ -> getLocalFolder(c).parentFile.parentFile.parent
-        buildEnv == BuildEnv.INTELLIJ ->  getLocalFolder(c).parentFile.parentFile.parentFile.parent
+        buildEnv == BuildEnv.INTELLIJ -> getLocalFolder(c).parentFile.parentFile.parentFile.parent
         else -> getLocalFolder(c).absolutePath
     }
-    return if (isJar)
+    return if (isJar) {
         File(parentJar)
-    else
+    } else {
         File(parentLocal)
+    }
 }
 
 enum class BuildEnv {
     INTELLIJ,
-    DEFAULT
+    DEFAULT,
 }

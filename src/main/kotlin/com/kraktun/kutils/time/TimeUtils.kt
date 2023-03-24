@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
  * Get current date and time formatted according to passed pattern
  */
 fun getCurrentDateTimeStamp(pattern: TimeFormat): String {
-    val patternF = when(pattern) {
+    val patternF = when (pattern) {
         TimeFormat.YDM -> "yyyy-dd-MM_HH-mm-ss"
         TimeFormat.YMD -> "yyyy-MM-dd_HH-mm-ss"
     }
@@ -19,7 +19,7 @@ fun getCurrentDateTimeStamp(pattern: TimeFormat): String {
  * Get current date and time formatted according to passed pattern
  */
 fun getCurrentDateTimeLog(pattern: TimeFormat): String {
-    val patternF = when(pattern) {
+    val patternF = when (pattern) {
         TimeFormat.YDM -> "yyyy-dd-MM HH:mm:ss"
         TimeFormat.YMD -> "yyyy-MM-dd HH:mm:ss"
     }

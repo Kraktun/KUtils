@@ -9,7 +9,7 @@ class SingleJobExecutorCoroutines(
     val action: (CoroutineScope) -> Unit,
     private val interval: Long,
     private val initialDelay: Long = 0,
-    private val timeUnit: TimeUnit = TimeUnit.SECONDS
+    private val timeUnit: TimeUnit = TimeUnit.SECONDS,
 ) : CoroutineScope {
 
     private val job = Job()

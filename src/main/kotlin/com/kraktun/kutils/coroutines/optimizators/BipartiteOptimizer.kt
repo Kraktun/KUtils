@@ -18,9 +18,10 @@ import java.util.*
 class BipartiteOptimizer<K, P> (
     private val files: List<K>,
     private val highThreads: Int = 1,
-    private val validator: (K) -> Boolean = {true},
+    private val validator: (K) -> Boolean = { true },
     private val highFunction: (K) -> P,
-    private val lowFunction: (K) -> P) : Optimizer<K, P> {
+    private val lowFunction: (K) -> P,
+) : Optimizer<K, P> {
 
     private val elements = LinkedList(files)
     private var freeHighs = highThreads
@@ -30,9 +31,9 @@ class BipartiteOptimizer<K, P> (
     }
 
     override fun executeNext(): Pair<K, P> {
-        var isHigh : Boolean
-        val el : K
-        val result : P
+        var isHigh: Boolean
+        val el: K
+        val result: P
         synchronized(this) {
             isHigh = freeHighs > 0 && validator(elements.first)
             el = if (isHigh) {
